@@ -4,15 +4,18 @@ const express = require('express');
 const router = express.Router();
 // create a JSON data array
 let data = [
-    { user_id: 1, user_name: 'Kishan',  user_pass: '1231234', user_email:'kishan@gmail.com',user_contact:'7202894410'},
-    { user_id: 2, user_name: 'vivek',  user_pass: '1231234', user_email:'vivek@gmail.com',user_contact:'9904472665'},
+    { id: 1, title: 'Create a project',  order: 1, completed: true, createdOn: new Date() },
+    { id: 2, title: 'Take a cofféé',     order: 2, completed: true, createdOn: new Date() },
+    { id: 3, title: 'Write new article', order: 3, completed: true, createdOn: new Date() },
+    { id: 4, title: 'Walk toward home', order: 4, completed: false, createdOn: new Date() },
+    { id: 5, title: 'Have some dinner', order: 5, completed: false, createdOn: new Date() },
 ];
 
 // HTTP methods ↓↓ starts here.
 
 // READ
 // this api end-point of an API returns JSON data array
-router.get('/user_list', function (req, res) {
+router.get('/', function (req, res) {
     res.status(200).json(data);
 });
 
@@ -35,69 +38,33 @@ router.get('/:id', function (req, res) {
 // CREATE
 // this api end-point add new object to item list
 // that is add new object to `data` array
-router.post('/register', function (req, res) {
+router.post('/', function (req, res) {
     // get itemIds from data array
-    let itemIds = data.map(item => item.user_id);
-    
+    let itemIds = data.map(item => item.id);
+    // get orderNums from data array
+    let orderNums = data.map(item => item.order);
 
     // create new id (basically +1 of last item object)
     let newId = itemIds.length > 0 ? Math.max.apply(Math, itemIds) + 1 : 1;
     // create new order number (basically +1 of last item object)
-    
+    let newOrderNum = orderNums.length > 0 ? Math.max.apply(Math, orderNums) + 1 : 1;
 
     // create an object of new Item
-    let newUser={ 
-        user_id: newId,
-        user_name: req.body.user_name,
-        user_pass: req.body.user_pass,
-        user_email:req.body.user_email,
-        user_contact:req.body.user_contact
-        };
+    let newItem = {
+        id: newId, // generated in above step
+        title: req.body.title, // value of `title` get from POST req
+        order: newOrderNum, // generated in above step
+        completed: false, // default value is set to false
+        createdOn: new Date() // new date object
+    };
+
     // push new item object to data array of items
-    data.push(newUser);
+    data.push(newItem);
 
     // return with status 201
     // 201 means Created. The request has been fulfilled and 
     // has resulted in one or more new resources being created. 
-    res.status(201).json(newUser);
-});
-
-
-// Login user api
-// this api end-point retrun login user details
-router.post('/login', function (req, res) {
-    var x;
-     // find an object from `data` array match by `id`
-     let found = data.find(function (item) {
-        x=item.user_pass;
-        return item.user_email === req.body.user_email;
-    });
-    // if object found return an object else return 404 not-found
-    let userId=req.body.user_email;
-    let userPass=req.body.user_pass;
-    
-
-    if(found){
-        if(userPass==x){
-            // return with status 201
-               // 201 means Created. The request has been fulfilled and 
-               // has resulted in one or more new resources being created. 
-               res.status(201).json(x);
-               }else{
-                   res.status(201).json({
-                       "message":"sacho password nakho"
-                   });  
-               }
-    }else{
-        res.status(201).json({
-            "message":"wrong email value"
-        });     
-    }
-
-   
-   
-
-   
+    res.status(201).json(newItem);
 });
 
 // UPDATE
