@@ -2,6 +2,7 @@
 const http = require('http');
 const express = require('express');
 var cors = require('cors');
+const db = require('./database');
 // import `items` from `routes` folder 
 const itemsRouter = require('./routes/items');
 const userRouter = require('./routes/user_route');
@@ -41,5 +42,21 @@ app.use('/', function(req, res) {
 
 const server = http.createServer(app);
 const port = 3000;
-server.listen(port);
-console.debug('Server listening on port ' + port);
+
+db.getConnection()
+  .then(() => {
+    server.listen(port, () => {
+      console.log(`Server Started at http://localhost:3000`)
+    })
+    // https.createServer(options, app).listen(8443);
+  })
+  .catch((error) => {
+    console.log(error)
+  });
+
+  
+module.exports = app;
+// const server = http.createServer(app);
+// const port = 3000;
+// server.listen(port);
+// console.debug('Server listening on port ' + port);

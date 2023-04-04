@@ -1,5 +1,6 @@
 // import required essentials
 const express = require('express');
+const db = require('../database');
 // create new router
 const router = express.Router();
 // create a JSON data array
@@ -12,6 +13,44 @@ let data = [
 ];
 
 // HTTP methods ↓↓ starts here.
+// user_register_api
+router.post('/register', function (req, res) {
+    
+    // create an object of new Item
+    let newUser={ 
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        email:req.body.email,
+        password:req.body.password
+        };
+    
+    // var x=db.insert('mst_user',{
+    //     "first_name":req.body.first_name,
+    //     "last_name":req.body.last_name,
+    //     "email":req.body.email,
+    //     "password":req.body.password
+    // });
+
+
+    const s1=`INSERT INTO mst_user(first_name,last_name,email,password) VALUES("${req.body.first_name}","${req.body.last_name}","${req.body.email}","${req.body.password}")`;
+        console.log("check valueu s1\n");
+        console.log(s1);
+    var result=db.custom(s1);
+    
+    // push new item object to data array of items
+    // data.push(newUser);
+    // return with status 201
+    // 201 means Created. The request has been fulfilled and 
+    // has resulted in one or more new resources being created. 
+    res.status(201).json(newUser);
+});
+
+router.post('/login', async function (req, res) {
+    let where = `email='${req.body.email}'`
+    let data = await db.select('mst_user', '*', where)
+    console.log(data);
+    res.status(201).json(data);
+});
 
 // READ
 // this api end-point of an API returns JSON data array
